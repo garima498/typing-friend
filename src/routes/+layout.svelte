@@ -35,7 +35,7 @@
 	});
 </script>
 
-<div class="flex">
+<div class="flex-data">
 	<div class="sidebar">
 		<a href="/" class="tm-button active" id="training-btn" on:click={() => addActiveClass()}
 			>Training</a
@@ -53,18 +53,31 @@
 			on:click={() => addActiveClass('settings')}>Settings</a
 		>
 	</div>
-	<div class="p-2" />
-	<div>
+	<main>
 		<slot />
-	</div>
+	</main>
 </div>
 
 <style>
-	.p-2 {
-		padding: 2rem;
+	* {
+		padding: 0px;
+		margin: 0px;
+		box-sizing: border-box;
+		/* Remove text selection */
+		-webkit-touch-callout: none; /* iOS Safari */
+		-webkit-user-select: none; /* Safari */
+		-khtml-user-select: none; /* Konqueror HTML */
+		-moz-user-select: none; /* Firefox */
+		-ms-user-select: none; /* Internet Explorer/Edge */
+		user-select: none; /* Non-prefixed version, currently
+								  supported by Chrome, Opera and Firefox */
 	}
-	.flex {
+	.flex-data {
 		display: flex;
+		height: 100vh;
+	}
+	main {
+		width: calc(100% - 160px);
 	}
 	.sidebar {
 		top: 0;
@@ -72,34 +85,39 @@
 		width: 160px;
 		height: 100%;
 		padding-left: 20px;
-		padding-top: 6%;
+		padding-top: 2%;
 		transition: all 0.5s ease;
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: 30px;
 	}
 
 	.tm-button {
 		background-color: white;
 		border: none;
 		outline: none;
-		box-shadow: -1px -1px 12px 2px rgb(216, 216, 216);
-		font-size: 20px;
+		font-size: 24px;
 		padding: 5px 30px;
 		cursor: pointer;
 		text-decoration: none;
 		text-align: center;
 		color: #333333;
+		transition: transform 0.2s;
+		border-radius: 8px;
 	}
 
 	.tm-button:hover {
-		box-shadow: -1px -1px 12px 2px rgba(124, 124, 124, 0.884);
-		background-color: rgb(63, 63, 63);
-		color: white;
+		transform: translateY(-2px);
+		box-shadow: 1px 4px 11px -3px rgba(0, 200, 250, 0.67);
+	}
+
+	.tm-button:active {
+		transform: translateY(0px);
+		box-shadow: 1px 4px 11px -3px rgba(0, 200, 250, 0.47);
 	}
 
 	.active {
-		box-shadow: none;
-		background-color: rgb(233, 233, 233);
+		transform: translateY(0px);
+		box-shadow: 1px 4px 11px -3px rgba(0, 200, 250, 0.97);
 	}
 </style>
