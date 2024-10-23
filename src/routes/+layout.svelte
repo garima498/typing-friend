@@ -37,20 +37,20 @@
 
 <div class="flex-data">
 	<div class="sidebar">
-		<a href="/" class="tm-button active" id="training-btn" on:click={() => addActiveClass()}
+		<a href="/" class="tm-button active" id="training-btn" onclick={() => addActiveClass()}
 			>Training</a
 		>
 		<a
 			href="practice"
 			class="tm-button"
 			id="practice-btn"
-			on:click={() => addActiveClass('practice')}>Practice</a
+			onclick={() => addActiveClass('practice')}>Practice</a
 		>
 		<a
 			href="settings"
 			class="tm-button"
 			id="setting-btn"
-			on:click={() => addActiveClass('settings')}>Settings</a
+			onclick={() => addActiveClass('settings')}>Settings</a
 		>
 	</div>
 	<main>
