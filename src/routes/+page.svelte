@@ -1,444 +1,73 @@
+<!-- Dashboard -->
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	const productId = $page.params.productId;
-
-	import data from '../data';
-
-	let timer: number | null = null;
-	let blinkTimer: number | null = null;
-	let seconds = 0;
-	let type = 'char';
-	let word: string[] = [];
-	let curCount = 0;
-	let error = 0;
-	let msgWord = 0;
-	let currentWord = 'a';
-	let msgWordCount = 5;
-	let wordLength = 5;
-	let wordCount = 0;
-	let speedArray: number[] = [];
-	let blink = true;
-	let pause = false;
-	let pauseSecondsInterval: number | null = null;
-	let pauseSeconds = 2;
-	let avg = 0;
-	let disabled = '';
-
-	const randomWordGenerator = () => {
-		let result = [];
-		let res = data.words;
-		for (let index = 0; index < res.length; index++) {
-			if (res[index].includes(currentWord)) {
-				result.push(res[index]);
-				if (result.length >= 20) {
-					break;
-				}
-			}
-		}
-		return result.join(' ');
-	};
-
-	const blinkSpan = () => {
-		let stage = document.querySelector('#stage');
-		const arr = stage?.children || [];
-		if (arr.length > 0) {
-			arr[0].classList.add('blink');
-		}
-	};
-
-	const setLocal = (key: string, value: string) => localStorage.setItem(key, value);
-
-	const renderNewWords = () => {
-		let stage = document.querySelector('#stage');
-		if (stage) {
-			stage.textContent = '';
-		}
-		curCount = 0;
-		const wordsArray = getRandomWords();
-		type === 'char'
-			? wordsArray.split('').forEach((character) => {
-					const characterSpan = document.createElement('span');
-					if (character == ' ') {
-						character = '␣';
-					}
-					characterSpan.innerText = character;
-					if (stage) {
-						stage.appendChild(characterSpan);
-						if (character == '␣') {
-							stage.appendChild(document.createElement('wbr'));
-						}
-					}
-			  })
-			: wordsArray.split(' ').map((e) => {
-					const characterSpan = document.createElement('span');
-					characterSpan.innerText = e;
-					characterSpan.classList.add('word');
-					if (stage) {
-						stage.appendChild(characterSpan);
-						stage.appendChild(document.createElement('wbr'));
-					}
-			  });
-		const arr = stage?.children || [];
-		arr[0].classList.add('blink');
-	};
-
-	// const randomFixedInteger = (length: number) =>
-	// 	Math.floor(
-	// 		Math.pow(10, length - 1) +
-	// 			Math.random() * (Math.pow(10, length) - Math.pow(10, length - 1) - 1)
-	// 	);
-
-	const blinkFun = (element: HTMLElement) => {
-		element.classList.add('blink');
-		if (blink) {
-			if (blinkTimer) {
-				clearInterval(blinkTimer);
-				blinkTimer = null;
-			}
-			if (!blinkTimer) {
-				blinkTimer = window.setInterval(() => {
-					element.classList.toggle('blink');
-				}, 400);
-			}
-		} else {
-			// clearInterval(blinkTimer);
-		}
-	};
-
-	const getRandomWords = () => {
-		let result: string[] = [];
-		// let res = shuffle(data.words);
-		// if (type === 'char') {
-		// 	if (currentWord) {
-		// 		for (let index = 0; index < msgWordCount; index++) {
-		// 			let semaphore = true;
-		// 			while (semaphore) {
-		// 				let number = randomFixedInteger(wordLength);
-		// 				let a = number.toString().split('');
-		// 				for (let index = 0; index < a.length; index++) {
-		// 					const element = a[index];
-		// 					if (element == currentWord) {
-		// 						result.push(a.join(''));
-		// 						semaphore = false;
-		// 						break;
-		// 					}
-		// 				}
-		// 			}
-		// 			if (result.length >= msgWordCount) {
-		// 				break;
-		// 			}
-		// 		}
-		// 	} else if (currentWord == currentWord.toUpperCase()) {
-		// 		for (let index = 0; index < res.length; index++) {
-		// 			if (res[index].includes(currentWord.toLowerCase()) && res[index].length == wordLength) {
-		// 				let a = res[index].split('');
-		// 				for (let index = 0; index < a.length; index++) {
-		// 					if (a[index] === currentWord.toLowerCase()) {
-		// 						a[index] = a[index].toUpperCase();
-		// 					}
-		// 				}
-		// 				result.push(a.join(''));
-		// 				if (result.length >= msgWordCount) {
-		// 					break;
-		// 				}
-		// 			}
-		// 		}
-		// 	} else if (currentWord == currentWord.toLowerCase()) {
-		// 		for (let index = 0; index < res.length; index++) {
-		// 			if (res[index].includes(currentWord) && res[index].length == wordLength) {
-		// 				result.push(res[index]);
-		// 				if (result.length >= msgWordCount) {
-		// 					break;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// } else {
-		// 	for (let index = 0; index < res.length; index++) {
-		// 		if (res[index].length == wordLength) {
-		// 			result.push(res[index]);
-		// 			if (result.length >= msgWordCount) {
-		// 				break;
-		// 			}
-		// 		}
-		// 	}
-		// }
-		// result.push('');
-		// msgWord = result.length;
-		return result.join(' ');
-	};
-
-	const shuffle = (arr: string[]) => {
-		let currentIndex = arr.length,
-			temporaryValue,
-			randomIndex;
-		while (0 !== currentIndex) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex--;
-			temporaryValue = arr[currentIndex];
-			arr[currentIndex] = arr[randomIndex];
-			arr[randomIndex] = temporaryValue;
-		}
-		return arr;
-	};
-
-	const onEveryKeyPress = () => {
-		let stage = document.querySelector('#stage');
-		const wordSpan = document.querySelector('#wordSpan');
-		const currentWordInput = document.getElementById('currentWord') as HTMLInputElement;
-
-		window.addEventListener('keydown', (e) => {
-			e.preventDefault();
-			pause = false;
-			if (!timer) {
-				timer = window.setInterval(() => {
-					if (!pause) {
-						seconds++;
-					}
-				}, 200);
-			}
-
-			let key = e.key;
-
-			if (stage && !stage.classList.contains('disabled')) {
-				// if (data.charArray.includes(key) || data.symbols.includes(key)) {
-				const arr = stage.querySelectorAll('span');
-				if (type === 'word') {
-					if (e.code === 'Backspace') {
-						word = data.words.slice(0, -1);
-						if (wordSpan) {
-							wordSpan.textContent = word.join('');
-						}
-					} else if (e.code === 'Space') {
-						if (arr[curCount].innerText === '␣') {
-							arr[curCount].classList.remove('correctWord');
-							arr[curCount].classList.add('correct');
-						} else {
-							arr[curCount].classList.remove('wrongWord');
-							arr[curCount].classList.add('incorrect');
-						}
-						arr[curCount].classList.remove('blink');
-					} else {
-						word.push(key);
-						if (wordSpan) {
-							wordSpan.textContent = word.join('');
-						}
-					}
-					if (e.code !== 'Space') {
-						if (arr[curCount].innerText.includes('word')) {
-							if (arr[curCount].classList.contains('wrongWord')) {
-								arr[curCount].classList.remove('wrongWord');
-							}
-						} else {
-							if (!arr[curCount].classList.contains('wrongWord')) {
-								arr[curCount].classList.add('wrongWord');
-								error++;
-							}
-						}
-					}
-					msgWord <= 1 ? renderNewWords() : null;
-				} else {
-					console.log('eKey:', e.key, 'eCode:', e.code, 'Current:', arr[curCount].innerText);
-					if (
-						e.key == arr[curCount].innerText ||
-						(e.code === 'Space' && arr[curCount].innerText === '␣')
-					) {
-						if (e.code === 'Space') {
-							wordCount++;
-							msgWord--;
-							if (msgWord <= 1 && timer) {
-								let temp = 300 / seconds;
-								wordCount = wordCount * temp;
-								speedArray.push(parseFloat(wordCount.toFixed(3)));
-								let sum = 0;
-								speedArray.forEach((element) => {
-									sum += element;
-								});
-								avg = sum / speedArray.length;
-								// if (errorElement) {
-								// 	errorElement.textContent = `Errors: ${error}`;
-								// }
-								currentWord = data.charArray[data.charArray.indexOf(currentWord) + 1];
-								setLocal('currentWord', currentWord);
-								if (currentWord === undefined) {
-									currentWord = data.charArray[0];
-									setLocal('currentWord', currentWord);
-								}
-								if (currentWordInput) {
-									currentWordInput.value = currentWord;
-								}
-								clearInterval(timer);
-								timer = null;
-								seconds = 0;
-								wordCount = 0;
-							}
-						}
-						arr[curCount].classList.add('correct');
-						arr.forEach((element) => {
-							if (element.classList.contains('wrong')) {
-								arr[curCount].classList.remove('correct');
-								element.classList.remove('wrong');
-								element.classList.add('incorrect');
-							}
-						});
-						arr[curCount].classList.remove('blink');
-						curCount++;
-						curCount < arr.length ? blinkFun(arr[curCount]) : null;
-						// if (msgWord <= 1) {
-						// 	addSpanToChar();
-						// }
-					} else {
-						arr[curCount].classList.add('wrong');
-						error++;
-						// if (errorElement) {
-						// 	errorElement.textContent = `Errors: ${error}`;
-						// }
-					}
-				}
-				// }
-			}
-			if (!pauseSecondsInterval) {
-				pauseSecondsInterval = window.setInterval(() => {
-					pauseSeconds--;
-					if (pauseSeconds <= 0) {
-						pause = true;
-					}
-				}, 1000);
-			}
-		});
-	};
-
-	// Add conditionals slice to wordArray and add to stage
-
-	let wordArray: string[] = [];
-	onMount(() => {
-		if (type !== 'word') {
-			let res = shuffle(data.words);
-			let x: string[] = [];
-			for (let index = 0; index < res.length; index++) {
-				if (res[index].includes(currentWord) && res[index].length == wordLength) {
-					x.push(res[index]);
-					if (x.length >= msgWordCount) {
-						break;
-					}
-				}
-			}
-			wordArray = x;
-		}
-
-		onEveryKeyPress();
-	});
+	import Button from '../components/Button.svelte';
+	import Progress from '../components/Progress.svelte';
+	import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
+	import Card from './../components/Card.svelte';
 </script>
 
-<div id="typing-master">
-	<div class="results">
-		<div id="speed">Speed: {wordCount.toFixed(1)}</div>
-		<div id="avgSpeed">Avg Speed: {avg.toFixed(1)}</div>
-		<div id="accuracy">Accuracy: 0</div>
-		<div id="Score">Score: 0</div>
-		<div id="error">Errors: {error}</div>
-	</div>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="stage-container">
-		<div
-			id="stage"
-			on:click={() => (disabled = disabled === 'disabled' ? '' : 'disabled')}
-			class="stage {disabled === 'disabled' ? 'disabled' : ''}"
-		>
-			{#if type === 'word'}
-				{#each data.words as word}
-					{#if word === ' '}
-						<wbr />
-					{:else}
-						<span class="blink">{word}</span>
-					{/if}
-				{/each}
-			{:else}
-				{#each wordArray as char, i}
-					<span class={i == 0 ? 'blink' : ''}>{char}</span>&nbsp;
-				{/each}
-			{/if}
+<div
+	class="flex min-h-screen flex-col items-center justify-between bg-gradient-to-b from-zinc-50 to-zinc-100 py-12 dark:from-zinc-900 dark:to-zinc-800"
+>
+	<ThemeSwitcher />
+	<main class="text-center">
+		<h1 class="mb-6 text-4xl font-bold tracking-tight dark:text-white sm:text-6xl">
+			Master Typing with AI
+		</h1>
+		<p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+			Improve your typing speed and accuracy with our AI-powered exercises. Get personalized
+			lessons, real-time feedback, and track your progress over time.
+		</p>
+		<div class="mt-10 flex items-center justify-center gap-x-6">
+			<Button asChild>
+				<a
+					href="/practice"
+					class="rounded-lg bg-black px-4 py-2 font-medium text-white shadow transition duration-200 ease-in-out hover:bg-zinc-800"
+				>
+					Start Practicing
+				</a>
+			</Button>
 		</div>
-		<div
-			id="msg-area"
-			on:click={() => (disabled = disabled === 'disabled' ? '' : 'disabled')}
-			class="{disabled !== 'disabled' ? 'hidden' : 'msg-not-hidden'} my-2"
-		>
-			<h3>Click again to enable...</h3>
-		</div>
-	</div>
-	<!-- <div class="hide" id="wordDiv">
-		Your Input:&nbsp; <span id="wordSpan" />
-	</div> -->
+	</main>
+	<div>
+		<div class="container mx-auto py-10">
+			<h1 class="mb-6 text-3xl font-bold">Your Typing Progress</h1>
+			<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+				<!-- Average WPM Card -->
+				<Card className="p-6">
+					<h3 class="text-sm font-medium">Average WPM</h3>
+					<div class="text-2xl font-bold">58</div>
+					<p class="text-muted-foreground text-xs">+20% from last week</p>
+				</Card>
+				<!-- Accuracy Card -->
+				<Card className="p-6">
+					<h3 class="text-sm font-medium">Accuracy</h3>
+					<div class="text-2xl font-bold">96%</div>
+					<p class="text-muted-foreground text-xs">+2% from last week</p>
+				</Card>
+				<!-- Lessons Completed Card -->
+				<Card className="p-6">
+					<h3 class="text-sm font-medium">Lessons Completed</h3>
+					<div class="text-2xl font-bold">23</div>
+					<p class="text-muted-foreground text-xs">+5 this week</p>
+				</Card>
+				<!-- Time Practiced Card -->
+				<Card className="p-6">
+					<h3 class="text-sm font-medium">Time Practiced</h3>
+					<div class="text-2xl font-bold">5h 23m</div>
+					<p class="text-muted-foreground text-xs">This week</p>
+				</Card>
+			</div>
 
-	<div class="blink" />
+			<div class="mt-6">
+				<!-- Current Goal Card -->
+				<Card className="p-4">
+					<h3 class="text-lg font-medium">Current Goal</h3>
+					<p>Reach 70 WPM with 98% accuracy</p>
+					<Progress value={66} />
+					<p class="text-muted-foreground mt-2 text-sm">66% completed</p>
+				</Card>
+			</div>
+		</div>
+	</div>
 </div>
-
-<style>
-	.stage-container {
-		display: grid;
-		place-items: center;
-		grid-template-columns: 1fr;
-		grid-template-areas: 'overlap';
-	}
-
-	.hidden {
-		display: none;
-	}
-
-	.msg-not-hidden {
-		color: black;
-		grid-area: overlap;
-		font-size: 34px;
-	}
-
-	.stage {
-		background-color: white;
-		border-radius: 20px;
-		box-shadow: 1px 4px 11px -3px rgba(0, 200, 250, 0.67);
-		font-size: 34px;
-		min-width: 85%;
-		width: 85%;
-		padding: 20px;
-		user-select: none;
-		word-wrap: break-word;
-		margin: 10px 0px;
-		grid-area: overlap;
-	}
-
-	.disabled {
-		color: rgba(126, 126, 126, 0.178);
-	}
-
-	#typing-master {
-		display: flex;
-		flex-direction: column;
-		text-align: center;
-		align-items: center;
-		gap: 15px;
-		font-size: 16px;
-		min-height: calc(100vh - 60px);
-	}
-	.results {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 10px;
-		margin-top: 20px;
-		font-size: 28px;
-		text-shadow: 2px 1px 5px rgb(128 128 128 / 20%);
-	}
-
-	.results > div {
-		padding: 5px 10px;
-		border-radius: 8px;
-		background-color: #ffffff;
-		box-shadow: 1px 4px 11px -3px rgba(0, 200, 250, 0.67);
-	}
-
-	.blink {
-		background-color: black;
-		color: white;
-	}
-</style>
