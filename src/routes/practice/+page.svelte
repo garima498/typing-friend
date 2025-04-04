@@ -65,7 +65,9 @@
 			});
 		}
 		const arr = stage?.children || [];
-		arr[0].classList.add('blink');
+		if (arr.length > 0) {
+			arr[0].classList.add('blink');
+		}
 	};
 
 	const blinkFun = (element: HTMLElement) => {

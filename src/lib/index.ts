@@ -31,7 +31,11 @@ export async function practiceWords(
         throw new Error('wordLength should be between 4 and 50.');
     }
     // @ts-expect-error - AI api is experimental and only supported in canary version of Chrome.
-    const session = await ai.languageModel.create();
+    const isLanguageModelAvailable = await LanguageModel.availability();
+    if (!isLanguageModelAvailable) {
+        throw new Error('Language model is not available. Please check your browser version.');
+    }
+    const session = await LanguageModel.create();
     const letters = concentratedAlphabets.join(', ');
     let prompt: string;
     switch (exerciseType) {
@@ -61,15 +65,21 @@ export async function practiceWords(
     let result = '';
     let attempts = 0;
     const maxRetries = 10;
-
-    while (!result && attempts < maxRetries)
+    console.log('prompt', prompt);
+    while (result.length == 0 && attempts < maxRetries) {
+        console.log('attempts', attempts);
+        console.log('maxRetries', maxRetries);
         attempts++;
-    try {
-        result = await session.prompt(prompt);
-    } catch (error) {
-        console.error('Error during AI session:', error);
+        try {
+            result = await session.prompt(prompt);
+        } catch (error) {
+            console.error('Error during AI session:', error);
+        }
     }
-    return result.replaceAll('*', '').trim();
+    console.timeEnd('practiceWords');
+    console.log('result', result);
+    return result.trim();
+
 }
 
 export const setTheme = (newTheme: App.Theme) => {
