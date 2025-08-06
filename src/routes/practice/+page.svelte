@@ -33,6 +33,7 @@
 	};
 
 	const renderNewWords = async () => {
+		console.log('Render New words');
 		let stage = document.querySelector('#stage');
 		if (stage) {
 			stage.textContent = '';
@@ -209,19 +210,19 @@
 	class="flex min-h-screen flex-col items-center justify-between bg-gradient-to-b from-zinc-50 to-zinc-100 py-12 dark:from-zinc-900 dark:to-zinc-800"
 >
 	<div class="flex items-center justify-center gap-3 text-2xl shadow-sm">
-		<Card className="p-6">
+		<Card classes="p-6">
 			<div>Speed: {speedArray[speedArray.length - 1].toFixed(1)}</div>
 		</Card>
-		<Card className="p-6">
+		<Card classes="p-6">
 			<div>Avg Speed: {avg.toFixed(1)}</div>
 		</Card>
-		<!-- <Card className="p-6">
+		<!-- <Card classes="p-6">
 			<div>Accuracy: 0</div>
 		</Card>
-		<Card className="p-6">
+		<Card classes="p-6">
 			<div>Score: 0</div>
 		</Card> -->
-		<Card className="p-6">
+		<Card classes="p-6">
 			<div>Errors: {error}</div>
 		</Card>
 	</div>
@@ -239,7 +240,7 @@
 				id="msg-area"
 				tabindex="0"
 				on:click={() => (disabled = disabled === 'disabled' ? '' : 'disabled')}
-				class="{disabled !== 'disabled' ? 'hidden' : ''} 
+				class="{disabled !== 'disabled' ? 'hidden' : ''}
                 rounded-md bg-gray-200 px-4 py-2 text-xl font-bold text-black"
 			>
 				<h3>Click again to enable...</h3>

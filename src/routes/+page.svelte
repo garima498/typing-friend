@@ -1,9 +1,8 @@
-<!-- Dashboard -->
 <script lang="ts">
 	import Button from '../components/Button.svelte';
+	import Card from '../components/Card.svelte';
 	import Progress from '../components/Progress.svelte';
 	import ThemeSwitcher from '../components/ThemeSwitcher.svelte';
-	import Card from './../components/Card.svelte';
 </script>
 
 <div
@@ -11,7 +10,7 @@
 >
 	<ThemeSwitcher />
 	<main class="text-center">
-		<h1 class="mb-6 text-4xl font-bold tracking-tight dark:text-white sm:text-6xl">
+		<h1 class="mb-6 text-4xl font-bold tracking-tight sm:text-6xl dark:text-white">
 			Master Typing with AI
 		</h1>
 		<p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
@@ -34,25 +33,25 @@
 			<h1 class="mb-6 text-3xl font-bold">Your Typing Progress</h1>
 			<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				<!-- Average WPM Card -->
-				<Card className="p-6">
+				<Card classes="p-6">
 					<h3 class="text-sm font-medium">Average WPM</h3>
 					<div class="text-2xl font-bold">58</div>
 					<p class="text-muted-foreground text-xs">+20% from last week</p>
 				</Card>
 				<!-- Accuracy Card -->
-				<Card className="p-6">
+				<Card classes="p-6">
 					<h3 class="text-sm font-medium">Accuracy</h3>
 					<div class="text-2xl font-bold">96%</div>
 					<p class="text-muted-foreground text-xs">+2% from last week</p>
 				</Card>
 				<!-- Lessons Completed Card -->
-				<Card className="p-6">
+				<Card classes="p-6">
 					<h3 class="text-sm font-medium">Lessons Completed</h3>
 					<div class="text-2xl font-bold">23</div>
 					<p class="text-muted-foreground text-xs">+5 this week</p>
 				</Card>
 				<!-- Time Practiced Card -->
-				<Card className="p-6">
+				<Card classes="p-6">
 					<h3 class="text-sm font-medium">Time Practiced</h3>
 					<div class="text-2xl font-bold">5h 23m</div>
 					<p class="text-muted-foreground text-xs">This week</p>
@@ -61,7 +60,7 @@
 
 			<div class="mt-6">
 				<!-- Current Goal Card -->
-				<Card className="p-4">
+				<Card classes="p-4">
 					<h3 class="text-lg font-medium">Current Goal</h3>
 					<p>Reach 70 WPM with 98% accuracy</p>
 					<Progress value={66} />
